@@ -46,7 +46,7 @@ const loginUser = async (req,res) => {
     const {email, password} = req.body
     const user = await userModel.findOne({email})
     if(!user) {
-      res.json({success:false, message: 'User doesnto exit'})
+     return res.json({success:false, message: 'User doesnot exit'})
     }
 
     const  isMatch = await bcrypt.compare(password, user.password)
