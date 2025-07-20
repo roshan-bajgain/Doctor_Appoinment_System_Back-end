@@ -1,6 +1,6 @@
-import express from 'express';
-import cors from 'cors';
-import 'dotenv/config';
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,8 +11,10 @@ app.use(cors());
 
 //api endpoints
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Doctor Appointment System API');
+app.get("/", (req, res) => {
+  res.send(
+    "Welcome to the Doctor Appointment System API roshan bajgin from jhapa"
+  );
 });
 
 app.listen(PORT, () => {
