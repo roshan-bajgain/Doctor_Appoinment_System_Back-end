@@ -6,3 +6,5 @@ const addDoctor = async (req,res) => {
   } catch (error){
 
   }}
+
+  export default {addDoctor};
