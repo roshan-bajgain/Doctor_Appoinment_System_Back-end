@@ -2,9 +2,9 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
+import jwt from "jsonwebtoken";
 
-//Api for adding doctor
-
+// API for adding doctor
 const addDoctor = async (req, res) => {
   try {
     const {
@@ -19,7 +19,8 @@ const addDoctor = async (req, res) => {
       address,
     } = req.body;
     const imageFile = req.file;
-    //checking if all required fields are present
+
+    // Check if all required fields are present
     if (
       !name ||
       !email ||
@@ -36,7 +37,8 @@ const addDoctor = async (req, res) => {
         message: "Please fill all the fields",
       });
     }
-    //validatiing email format
+
+    // Validate email
     if (!validator.isEmail(email)) {
       return res.json({
         success: false,
@@ -44,19 +46,19 @@ const addDoctor = async (req, res) => {
       });
     }
 
-    //validating password length
+    // Validate password
     if (password.length < 8) {
       return res.json({
         success: false,
         message: "Password must be at least 8 characters long",
       });
     }
-    //hasing doctor password
+
+    // Hash doctor password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    //upload image to cloudinary
-
+    // Upload image to cloudinary
     const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
       resource_type: "image",
     });
@@ -86,4 +88,28 @@ const addDoctor = async (req, res) => {
   }
 };
 
-export default addDoctor;
+// API for admin login
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const token = jwt.sign(email + password, process.env.JWT_SECRET);
+      res.json({
+        success: true,
+        message: "Login successful",
+        token: token,
+      });
+    } else {
+      res.json({ success: false, message: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Internal server error" });
+  }
+};
+
+export { addDoctor, loginAdmin };
