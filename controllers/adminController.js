@@ -9,6 +9,7 @@ const addDoctor = async (req, res) => {
   try {
     const {
       name,
+      image,
       email,
       password,
       speciality,
@@ -30,6 +31,7 @@ const addDoctor = async (req, res) => {
       !experience ||
       !about ||
       !fees ||
+      !image ||
       !address
     ) {
       return res.json({
