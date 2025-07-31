@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 //admin authentication middleware
-const authAdmin = (req, res, next) => {
+const authAdmin = async (req, res, next) => {
   try {
     const {atoken} = req.headers;
     if(!atoken) {
