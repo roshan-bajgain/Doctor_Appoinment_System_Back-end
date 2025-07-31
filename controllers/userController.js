@@ -2,7 +2,9 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import {v2 as cloudinary} from 'cloudinary'
+import { v2 as cloudinary } from "cloudinary";
+import doctorModel from "../models/doctorModel.js";
+import appoinmentModel from "../models/appoinmentModel.js";
 
 //Api to register user
 const registerUser = async (req, res) => {
@@ -67,7 +69,7 @@ const loginUser = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const  userId  = req.userId;
+    const userId = req.userId;
     const userData = await userModel.findById(userId).select("-password");
     res.json({ success: true, userData });
   } catch (error) {
@@ -95,20 +97,77 @@ const updateProfile = async (req, res) => {
       dob,
       gender,
     });
-if(imageFile){
-  //upload image to cloudinary
-  const imageUpload = await cloudinary.uploader.upload(imageFile.path,{resource_type: 'image'})
-  const imageURL = imageUpload.secure_url
+    if (imageFile) {
+      //upload image to cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      const imageURL = imageUpload.secure_url;
 
-  await userModel.findByIdAndUpdate(userId,{image:imageURL})
-}
+      await userModel.findByIdAndUpdate(userId, { image: imageURL });
+    }
 
-res.json({success:true, message:"Profile Updated"})
-
+    res.json({ success: true, message: "Profile Updated" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile };
+//Api to book appoinement
+
+const bookAppointment = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { docId, slotDate, slotTime } = req.body;
+
+    const docData = await doctorModel.findById(docId).select("-password");
+
+    if (!docData.available) {
+      return res.json({ success: false, message: "Doctor not available" });
+    }
+
+    let slots_booked = docData.slots_booked;
+
+    // Slot availability check
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({ success: false, message: "Slot not available" });
+      } else {
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      slots_booked[slotDate] = [slotTime];
+    }
+
+    const userData = await userModel.findById(userId).select("-password");
+
+    // Optional: remove slot info from docData if needed
+    delete docData.slots_booked;
+
+    const appointmentData = {
+      userId,
+      docId,
+      slotDate,
+      slotTime,
+      userData,
+      docData,
+      amount: docData.fees,
+      date: Date.now(),
+    };
+
+    const newAppointment = new appoinmentModel(appointmentData);
+    await newAppointment.save();
+
+    // Update doctor's slot booking
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+
+    res.json({ success: true, message: "Appointment booked" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment };
