@@ -142,7 +142,7 @@ const bookAppointment = async (req, res) => {
 
     const userData = await userModel.findById(userId).select("-password");
 
-    // Optional: remove slot info from docData if needed
+    //remove slot info from docData
     delete docData.slots_booked;
 
     const appointmentData = {
