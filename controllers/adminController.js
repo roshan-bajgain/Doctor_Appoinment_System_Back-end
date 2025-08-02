@@ -26,6 +26,7 @@ const addDoctor = async (req, res) => {
     // Check if all required fields are present
     if (
       !name ||
+      !imageFile ||
       !email ||
       !password ||
       !speciality ||
@@ -33,7 +34,6 @@ const addDoctor = async (req, res) => {
       !experience ||
       !about ||
       !fees ||
-      !image ||
       !address
     ) {
       return res.json({
