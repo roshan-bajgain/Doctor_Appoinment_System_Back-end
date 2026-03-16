@@ -11,19 +11,28 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 connectDB();
 connectCloudinary();
-//middleware
+
+// middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://doctor-appoinment-system-front-end.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 
-//api endpoints
-app.use("/api/admin", adminRouter); //localhost:5000/api/admin/add-doctor
-app.use("/api/doctor", doctorRouter); //localhost:5000/api/doctor/list
+// api endpoints
+app.use("/api/admin", adminRouter);
+app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
   res.send(
-    "Welcome to the Doctor Appointment System API roshan bajgin from jhapa"
+    "Welcome to the Doctor Appointment System API roshan bajgin from jhapa",
   );
 });
 
