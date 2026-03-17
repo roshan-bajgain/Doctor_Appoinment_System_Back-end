@@ -8,7 +8,7 @@ import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+
 connectDB();
 connectCloudinary();
 
@@ -31,11 +31,8 @@ app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send(
-    "Welcome to the Doctor Appointment System API roshan bajgin from jhapa",
-  );
+  res.send("Welcome to the Doctor Appointment System API");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// ✅ Remove app.listen() and export instead
+export default app;
