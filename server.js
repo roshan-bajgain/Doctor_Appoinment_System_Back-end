@@ -12,7 +12,6 @@ const app = express();
 connectDB();
 connectCloudinary();
 
-// middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -25,14 +24,12 @@ app.use(
   }),
 );
 
-// api endpoints
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Doctor Appointment System API");
+  res.send("API is running");
 });
 
-// ✅ Remove app.listen() and export instead
 export default app;
